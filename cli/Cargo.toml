@@ -1,0 +1,8 @@
+[package]
+name = "hello_blinky_cli"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+hello_blinky_driver = {path = "../driver"}
+embedded-hal = "1.0.0-rc"
