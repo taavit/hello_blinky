@@ -40,7 +40,7 @@ impl From<LedDuration> for u32 {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub enum LedSignal {
     BLINK(LedDuration),
     PAUSE(LedDuration),

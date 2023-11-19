@@ -1,40 +1,13 @@
 #![no_std]
 #![no_main]
 
-use core::cell::Cell;
-
-use critical_section::Mutex;
-use hello_blinky_driver::FinalBlinky;
-use cortex_m::delay::Delay;
-use hello_blinky_driver::LedDuration;
-use hello_blinky_driver::LedSignal;
 use rp_pico::entry;
+use embedded_hal::digital::v2::OutputPin;
 
 use panic_halt as _;
 
-use rp_pico::hal::gpio::PullDown;
-use rp_pico::hal::prelude::*;
-use rp_pico::hal::pac;
+use rp_pico::hal::{pac, Clock};
 use rp_pico::hal;
-
-use rp_pico::hal::gpio;
-
-static DEVICE: Mutex<
-    Cell<
-        Option<
-            FinalBlinky<
-                gpio::Pin<
-                    gpio::bank0::Gpio25,
-                    gpio::FunctionSio<
-                        gpio::SioOutput
-                    >,
-                    PullDown
-                >,
-                Delay
-            >
-        >
-    >
-> = Mutex::new(Cell::new(None));
 
 #[entry]
 fn main() -> ! {
@@ -54,7 +27,7 @@ fn main() -> ! {
     .ok()
     .unwrap();
 
-    let delay = cortex_m::delay::Delay::new(core.SYST, clocks.system_clock.freq().to_Hz());
+    let mut delay = cortex_m::delay::Delay::new(core.SYST, clocks.system_clock.freq().to_Hz());
 
     // The single-cycle I/O block controls our GPIO pins
     let sio = hal::Sio::new(pac.SIO);
@@ -68,36 +41,12 @@ fn main() -> ! {
     );
 
     // Set the LED to be an output
-    let led_pin = pins.led.into_push_pull_output();
-    
-    let dev = FinalBlinky::new(led_pin, delay);
-    critical_section::with(
-        |cs| DEVICE.borrow(cs).replace(Some(dev))
-    );
+    let mut led_pin = pins.led.into_push_pull_output();
 
     loop {
-        // led_pin.set_high().unwrap();
-        // delay.delay_ms(500);
-        // led_pin.set_low().unwrap();
-        // delay.delay_ms(500);
-
-        use_device();
+        led_pin.set_high().unwrap();
+        delay.delay_ms(500);
+        led_pin.set_low().unwrap();
+        delay.delay_ms(500);
     }
-}
-
-fn use_device() {
-    critical_section::with(
-        |cs| {
-            let mut dev = DEVICE.borrow(cs).take().unwrap();
-            dev.blink_times(4);
-            dev.blink_scheme(
-                &[
-                    LedSignal::BLINK(LedDuration::LONG),
-                    LedSignal::BLINK(LedDuration::SHORT),
-                    LedSignal::BLINK(LedDuration::SHORT),
-                    LedSignal::BLINK(LedDuration::LONG),
-                ]);
-            DEVICE.borrow(cs).set(Some(dev));
-        }
-    );
 }
