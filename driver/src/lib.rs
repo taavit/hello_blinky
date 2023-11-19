@@ -78,8 +78,8 @@ impl <Pin: OutputPin, Delayer: DelayMs<u32>> FinalBlinky<Pin, Delayer> {
         }
     }
 
-    pub fn blink_scheme(&mut self, scheme: &[LedSignal]) {
-        for signal in scheme {
+    pub fn blink_sequence(&mut self, sequence: &[LedSignal]) {
+        for signal in sequence {
             match *signal {
                 LedSignal::BLINK(LedDuration::CUSTOM(0)) => {
                     self.delayer.delay_ms(250);

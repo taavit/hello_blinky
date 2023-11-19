@@ -83,7 +83,7 @@ fn use_device() {
         |cs| {
             let mut dev = DEVICE.borrow(cs).take().unwrap();
             dev.blink_times(4);
-            dev.blink_scheme(
+            dev.blink_sequence(
                 &[
                     LedSignal::BLINK(LedDuration::LONG),
                     LedSignal::BLINK(LedDuration::SHORT),
