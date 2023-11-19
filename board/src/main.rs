@@ -25,9 +25,7 @@ static DEVICE: Mutex<
             FinalBlinky<
                 gpio::Pin<
                     gpio::bank0::Gpio25,
-                    gpio::FunctionSio<
-                        gpio::SioOutput
-                    >,
+                    gpio::FunctionSioOutput,
                     PullDown
                 >,
                 Delay
@@ -76,11 +74,6 @@ fn main() -> ! {
     );
 
     loop {
-        // led_pin.set_high().unwrap();
-        // delay.delay_ms(500);
-        // led_pin.set_low().unwrap();
-        // delay.delay_ms(500);
-
         use_device();
     }
 }
